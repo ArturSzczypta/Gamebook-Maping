@@ -1,15 +1,22 @@
+import matplotlib.pyplot as plt
+
 import plotly.graph_objects as go
 
 import networkx as nx
 
+import numpy as np
+
 import csv
 
 G = nx.Graph()
+dicts = {}
 
 with open('Gamebook Nodes.csv') as nodesFile:
 	readCSVNodes= csv.reader(nodesFile, delimiter=',')
 
+	
 	for row in readCSVNodes:
+		# Creating With and without special names
 		if row[0] == row[1]:
 			
 			if int(row[0])%20 != 0:
@@ -23,6 +30,10 @@ with open('Gamebook Nodes.csv') as nodesFile:
 				G.add_node(int(row[0]), name=row[1], pos=(int(row[0])%20,int(row[0])//20))
 			else:
 				G.add_node(int(row[0]), name=row[1], pos=(int(row[0])%20  + 20,int(row[0])//20 - 1))
+		
+		
+
+#print('dictionary', dicts)
 
 
 with open('Gamebook Edges.csv') as edgesFile:
@@ -33,16 +44,31 @@ with open('Gamebook Edges.csv') as edgesFile:
 		if row[1] != '':
 			G.add_edge(int(row[0]), int(row[1]))
 
- #I have to create a dictionary with values
+ #I have to create a dictionary wSBith values
  # https://networkx.github.io/documentation/latest/_downloads/networkx_reference.pdf page 680
 
 
 
 
-pos = nx.spring_layout(G, dim=40, k=None, pos=None, fixed=None, iterations=10, weight='weight', scale=1.0, center=None)
-print(pos)
+#pos = nx.spring_layout(G, dim=40, k=None, fixed=None, iterations=10, weight='weight', scale=1.0, center=None)
+#print(pos)
 print(G.nodes.data())
-print(G.edges)
+print('-----------')
+
+position = nx.get_node_attributes(G, 'pos')
+print(position)
+print('-----------')
+#print(G.edges)
+#nx.draw(G,position)
+#plt.show()
+
+
+
+nx.draw(G,  pos=nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=1000),dim=1, node_color='r', node_size=10, with_labels=True,width= 2,alpha=0.8, font_size=10)
+#print(nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=10))
+
+
+plt.show()
 
 
 
@@ -53,12 +79,14 @@ print(G.edges)
 
 
 
-		
+
+'''
+
 edge_x = []
 edge_y = []
 for edge in G.edges():
-    x0, y0 = G.node[edge[0]]['pos']
-    x1, y1 = G.node[edge[1]]['pos']
+    x0, y0 = G.node[edge[0]][pos[0]]
+    x1, y1 = G.node[edge[1]][pos[1]]
     edge_x.append(x0)
     edge_x.append(x1)
     edge_x.append(None)
@@ -129,3 +157,4 @@ fig = go.Figure(data=[edge_trace, node_trace],
                 )
 fig.show()
 
+'''
