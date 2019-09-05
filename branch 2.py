@@ -62,10 +62,39 @@ print('-----------')
 #nx.draw(G,position)
 #plt.show()
 
+#If 1 and 400 are fixed
+#after_iterating = nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=2000)
 
+pos = nx.spring_layout(G, pos=position, iterations=100)
 
-nx.draw(G,  pos=nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=1000),dim=1, node_color='r', node_size=10, with_labels=True,width= 2,alpha=0.8, font_size=10)
+nx.draw(G, pos, dim=1, node_color='r', node_size=10, with_labels=True,width= 1,alpha=0.8, font_size=10)
 #print(nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=10))
+print(pos)
+
+path = nx.shortest_path(G,source=1,target=400)
+keys = [75,145,258]
+
+#path_edges = zip(path,path[1:])
+
+# get solution to be a line. Make it so itsteadly becoming straight line
+# those 9 connected points from the begining to the end should be bolded
+# stop those few points from flying away
+# point out deaths and wrong keys
+
+
+nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='b')
+nx.draw_networkx_nodes(G,pos,nodelist=keys,node_color='violet')
+print(path)
+#nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='r',width=10)
+plt.axis('equal')
+
+
+
+
+special_ones = nx.get_node_attributes(G, 'after_iterating')
+print('---------------')
+print(special_ones)
+#nx.draw_networkx_nodes(G,pos=after_iterating,nodelist=[0,400], node_color='b')
 
 
 plt.show()
