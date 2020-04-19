@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 
+import matplotlib.animation as animation
+
 import plotly.graph_objects as go
 
 import networkx as nx
@@ -8,8 +10,11 @@ import numpy as np
 
 import csv
 
+#from intertools import combinations  as com
+
 G = nx.Graph()
 dicts = {}
+distance = 20
 
 with open('Gamebook Nodes.csv') as nodesFile:
 	readCSVNodes= csv.reader(nodesFile, delimiter=',')
@@ -20,16 +25,16 @@ with open('Gamebook Nodes.csv') as nodesFile:
 		if row[0] == row[1]:
 			
 			if int(row[0])%20 != 0:
-				G.add_node(int(row[0]), name='', pos=(int(row[0])%20,int(row[0])//20))
+				G.add_node(int(row[0]), name='', pos=(-int(row[0])%20,-(int(row[0])//20+1)))
 			else:
-				G.add_node(int(row[0]), name='', pos=(int(row[0])%20 + 20,int(row[0])//20 - 1))
+				G.add_node(int(row[0]), name='', pos=(-(int(row[0])%20),-(int(row[0])//20)))
 
 		else:
 			
 			if int(row[0])%20 != 0:
-				G.add_node(int(row[0]), name=row[1], pos=(int(row[0])%20,int(row[0])//20))
+				G.add_node(int(row[0]), name=row[1], pos=(-int(row[0])%20,-(int(row[0])//20+1)))
 			else:
-				G.add_node(int(row[0]), name=row[1], pos=(int(row[0])%20  + 20,int(row[0])//20 - 1))
+				G.add_node(int(row[0]), name=row[1], pos=(-(int(row[0])%20),-(int(row[0])//20)))
 		
 		
 
@@ -52,27 +57,41 @@ with open('Gamebook Edges.csv') as edgesFile:
 
 #pos = nx.spring_layout(G, dim=40, k=None, fixed=None, iterations=10, weight='weight', scale=1.0, center=None)
 #print(pos)
-print(G.nodes.data())
+#print(G.nodes.data())
 print('-----------')
 
 position = nx.get_node_attributes(G, 'pos')
-print(position)
-print('-----------')
-#print(G.edges)
-#nx.draw(G,position)
-#plt.show()
 
-#If 1 and 400 are fixed
-#after_iterating = nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=2000)
+good_keys = [75,145,258]
+bad_keys = [50,125,322]
+failed = [139,182,198]
+dead = [64,118,387]
 
-pos = nx.spring_layout(G, pos=position, iterations=100)
+#points = good_keys + [1,400]
+#print(points)
 
-nx.draw(G, pos, dim=1, node_color='r', node_size=10, with_labels=True,width= 1,alpha=0.8, font_size=10)
+
+#Shortest from point to point
+#path = nx.shortest_path(G,source=1,target=400)
+
+
+
+good_keys = [75,145,258]
+bad_keys = [50,125,322]
+failed = [139,182,198]
+dead = [64,118,387]
+print(path)
+
+pos = nx.spring_layout(G, pos=position, fixed=[1,400], iterations=0)
+
+nx.draw(G, pos, dim=1, node_color='green', node_size=50, with_labels=True,\
+    width= 1,alpha=1, font_size=8,font_weight='normal')
 #print(nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=10))
-print(pos)
+#print(pos)
+#nx.draw_networkx_edges(G,pos,arrows=True,arrowstyle='-|>', arrowsize=10)
 
-path = nx.shortest_path(G,source=1,target=400)
-keys = [75,145,258]
+
+
 
 #path_edges = zip(path,path[1:])
 
@@ -82,19 +101,75 @@ keys = [75,145,258]
 # point out deaths and wrong keys
 
 
-nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='b')
-nx.draw_networkx_nodes(G,pos,nodelist=keys,node_color='violet')
+nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='blue', node_size=80)
+nx.draw_networkx_nodes(G,pos,nodelist=good_keys,node_color='cyan', node_size=80)
+nx.draw_networkx_nodes(G,pos,nodelist=bad_keys,node_color='purple', node_size=80)
+nx.draw_networkx_nodes(G,pos,nodelist=bad_keys,node_color='orange', node_size=80)
+nx.draw_networkx_nodes(G,pos,nodelist=dead,node_color='red', node_size=80)
 print(path)
 #nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='r',width=10)
+
+
+
 plt.axis('equal')
 
 
 
 
 special_ones = nx.get_node_attributes(G, 'after_iterating')
+plt.show()
 print('---------------')
 print(special_ones)
+plt.savefig("graph.png")
 #nx.draw_networkx_nodes(G,pos=after_iterating,nodelist=[0,400], node_color='b')
+
+'''
+ Animation based on answer from @david
+https://stackoverflow.com/questions/61261107/smooth-animation-of-a-network-using-networkx-and-matplotlib
+
+node_number = 0
+while node_number < 10:
+    pos = nx.spring_layout(G, pos=position, fixed=[1,400], iterations=node_number)
+    node_number += 1
+
+
+def anim(t):
+    global s_pos
+    global t_pos
+    interpolation = {i: s_pos[i]*(1-t/10) + t_pos[i] * t/10  for i in range(10)}
+    plt.clf()
+    plt.cla()
+    nx.draw(G, pos=interpolation)
+
+
+ani = animation.FuncAnimation(G, anim, repeat=False, frames=10, interval=10)
+plt.show()
+
+
+iteration = 0
+def simple_update(num, n, layout, G, ax):
+    ax.clear()
+
+    pos = nx.spring_layout(G, pos=position, fixed=[1,400], iterations=iteration)
+    nx.draw(G, pos, dim=1, node_color='green', node_size=50, with_labels=True,\
+    width= 1,alpha=1, font_size=8,font_weight='normal')
+
+    ax.set_title("Frame {}".format(num))
+
+    iteration += 1
+
+
+
+# Build plot
+fig, ax = plt.subplots(figsize=(10,10))
+
+# Create a graph and layout
+n = 30 # Number of nodes
+m = 70 # Number of edges
+G = nx.gnm_random_graph(n, m)
+layout = nx.spring_layout(G)
+
+ani = animation.FuncAnimation(fig, simple_update, frames=10, fargs=(n, layout, G, ax))
 
 
 plt.show()
@@ -109,7 +184,22 @@ plt.show()
 
 
 
-'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 edge_x = []
 edge_y = []
