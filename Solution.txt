@@ -1,0 +1,130 @@
+1  Turn west in the cave
+ 71  The creature does not wake up					Lu-1
+301  Press on northwards past the snoring
+208  Try opening the door
+397  Open the small box
+240  Kill the SNAKE 5/2
+145  You take the key and leave the room	Bronze key #99		Lu+1
+363  Investigate the hideous din
+370  Draw your sword and leap forward
+116  Attack each ORC 5/4 5/5						At+1
+378  Open the wooden box
+296  You memorize the spell and leave		[Farrigo Di Maggio]
+ 42  Turn to the east
+113  Go northwards at the junction
+285  Open the well-used door
+213  The door bursts open
+ 36  Try to calm the old man down
+263  You go your separate ways						Lu+1
+314  Open the door to investigate
+223  Try to force it open
+ 53  The door opens
+155  You leave the room				-Shield, crescent shield
+300  Ignore the tortured screams and continue
+303  Pull the right lever
+128  Turn east at the portcullis
+ 58  Stop and eat Provisions
+ 15  You are ready to continue			-1 Provision		Sk+1 St+6
+367  Go east at the junction
+323  Go eastwards
+255  Try opening the sturdy wooden door
+193  Try to take the jewel
+338  Fight the IRON CYCLOPS 10/10
+ 75  You set off back to the junction		Jewel, small key #111	Lu+3
+ 93  You turn northwards
+  8  Defeat the BARBARIAN 7/6
+273  You leave through the door			Mallet, 5 wooden stakes
+189  Stop to look at the paintings
+ 25  Look through your pack for a weapon				Sk-1
+340  Hold the jewel up
+ 31  You leave through the north door					Sk+2
+ 90  You continue northwards
+253  Leave through the north door
+ 73  You find yourself in a large cavern
+218  Punt the raft across the river
+386  Keep punting to the north side
+ 55  You arrive safely
+  7  You are on the north bank
+214  Take the passage to the north-west
+271  Go through the door
+336  Bang on the door to wake up the old man
+172  Tell him his boots are undone
+165  Leave through the south door
+ 66  Go for the door in the rockface
+104  You try the door to the north
+ 49  A blow to your head knocks you senseless				St-2
+122  Jump to your feet
+282  Defeat all four ZOMBIES 7/6 6/6 6/6 6/5				Lu+2
+115  Go over to the dead body
+313  Take					8 GP, steel sword	Sk+1 Lu+1
+221  The sword
+ 27  Throw your old sword away			-Sword			iSk+2 Lu+2
+319  Investigate
+221  The gold
+110  You find another 2 Gold Pieces		2 GP
+319  You have investigated both items
+ 81  You walk up to the north door
+205  Investigate the room further
+254  Reach into your bag
+279  You have a wooden stake
+ 17  The stake pierces the Vampire's heart				Lu-1
+327  You leave through the west door		30 GP			Lu+3
+380  You go on to the crossroads
+ 37  Go west
+ 11  Relax then go northwards						Sk+1 St+2
+366  Go through the narrow opening
+ 89  You descend the stairs
+286  Search the second body
+275  The creature misses						Lu-1
+230  Defeat the GHOUL 8/7
+390  Search the second body			5 GP, earrings		Lu+2
+393  Read the old parchment			8 GP, bottle, parchment
+212  Test the liquid
+369  You swallow some of the liquid
+109  You leave the room northwards					Sk+ St+ Lu+4
+120  You leave the chamber and climb the stairs
+197  Press on forward
+ 48  Go east and turn a corner northwards
+391  Go up to the passage from the east
+ 52  Go east
+291  Try the door to the north
+227  Try to befriend the four tiny men
+131  Eventually you leave the room
+291  Go west to a familiar junction
+ 52  Go north
+354  Go west at the bend
+308  Go north at the crossroads
+ 54  Go through the door
+179  Kill the MINOTAUR 9/9
+258  You take the key and leave the room	8 GP, red key #111	Lu+2
+ 54  Go south
+308  Go south at the crossroads
+160  You find yourself at a crossroads
+267  Go south
+246  Go north along the cobbled passageway
+329  Go eastwards at the door
+299  Proceed northwards a long way
+359  Go west at the crossroads
+385  Go north to the dead end
+398  Push the small knob
+364  Climb through the doorway
+373  You go northwards
+ 85  Go north at the crossroads
+106  Search for another means of attack
+126  You remember "Farrigo Di Maggio"
+ 26  The Dragon turns its back
+371  You continue to the west						Lu+3
+274  Greet the old man courteously
+356  He has been expecting you
+358  Look through your pack
+105  Use the Eye of the Cyclops
+382  His robes are all that remain
+396  You open the door
+242  Search through your bag
+139* Use three keys to open the locks
+321  The keys click and turn
+169  The lid of the chest comes free
+400  Your quest is over
+
+139 you are informed about the key numbers
+
