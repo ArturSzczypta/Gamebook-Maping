@@ -10,11 +10,17 @@ import numpy as np
 
 import csv
 
-#from intertools import combinations  as com
 
-G = nx.Graph()
-dicts = {}
-distance = 20
+
+#250
+nodeSize = 150
+
+#If non directional
+#G = nx.Graph()
+
+
+#Directions https://stackoverflow.com/a/48995916/5531122
+G = nx.DiGraph(directed=True)
 
 with open('Gamebook Nodes.csv') as nodesFile:
 	readCSVNodes= csv.reader(nodesFile, delimiter=',')
@@ -25,21 +31,17 @@ with open('Gamebook Nodes.csv') as nodesFile:
 		if row[0] == row[1]:
 			
 			if int(row[0])%20 != 0:
-				G.add_node(int(row[0]), name='', pos=(-int(row[0])%20,-(int(row[0])//20+1)))
+				G.add_node(int(row[0]), name='', pos=(int(row[0])%20,-(int(row[0])//20+1)))
 			else:
-				G.add_node(int(row[0]), name='', pos=(-(int(row[0])%20),-(int(row[0])//20)))
+				G.add_node(int(row[0]), name='', pos=(20,-(int(row[0])//20)))
 
 		else:
 			
 			if int(row[0])%20 != 0:
-				G.add_node(int(row[0]), name=row[1], pos=(-int(row[0])%20,-(int(row[0])//20+1)))
+				G.add_node(int(row[0]), name=row[1], pos=(int(row[0])%20,-(int(row[0])//20+1)))
 			else:
-				G.add_node(int(row[0]), name=row[1], pos=(-(int(row[0])%20),-(int(row[0])//20)))
+				G.add_node(int(row[0]), name=row[1], pos=(20,-(int(row[0])//20)))
 		
-		
-
-#print('dictionary', dicts)
-
 
 with open('Gamebook Edges.csv') as edgesFile:
 	readCSVEdges= csv.reader(edgesFile, delimiter=',')
@@ -49,65 +51,117 @@ with open('Gamebook Edges.csv') as edgesFile:
 		if row[1] != '':
 			G.add_edge(int(row[0]), int(row[1]))
 
- #I have to create a dictionary wSBith values
- # https://networkx.github.io/documentation/latest/_downloads/networkx_reference.pdf page 680
 
-
-
-
-#pos = nx.spring_layout(G, dim=40, k=None, fixed=None, iterations=10, weight='weight', scale=1.0, center=None)
-#print(pos)
 #print(G.nodes.data())
-print('-----------')
-
+#Assign positions to nodes
 position = nx.get_node_attributes(G, 'pos')
 
-good_keys = [75,145,258]
-bad_keys = [50,125,322]
-failed = [139,182,198]
-dead = [64,118,387]
-
-#points = good_keys + [1,400]
-#print(points)
-
-
-#Shortest from point to point
-#path = nx.shortest_path(G,source=1,target=400)
-
-
 
 good_keys = [75,145,258]
 bad_keys = [50,125,322]
 failed = [139,182,198]
 dead = [64,118,387]
-print(path)
 
-pos = nx.spring_layout(G, pos=position, fixed=[1,400], iterations=0)
 
-nx.draw(G, pos, dim=1, node_color='green', node_size=50, with_labels=True,\
-    width= 1,alpha=1, font_size=8,font_weight='normal')
+#Succeasfull paths: get 3 good keys
+key_options=[good_keys,
+    [good_keys[0], good_keys[2],good_keys[1]],
+    [good_keys[1], good_keys[0],good_keys[2]],
+    [good_keys[1], good_keys[2],good_keys[0]],
+    [good_keys[2], good_keys[0],good_keys[1]],
+    [good_keys[2], good_keys[1],good_keys[0]]]
+
+#shortest path
+quick_paths_nodes = []
+working_paths  = []
+for i in key_options:
+    try:
+        s = nx.shortest_path(G,source=1,target=i[0])
+        m1 = nx.shortest_path(G,source=i[0],target=i[1])
+        m2 = nx.shortest_path(G,source=i[1],target=i[2])
+        t = nx.shortest_path(G,source=i[2],target=400)
+        quick_paths_nodes.append(s+ m1[1:]+ m2[1:]+ t[1:])
+        working_paths.append(i)
+        print(i)
+    except:
+        print(i,"An exception occurred")
+for i in quick_paths_nodes:
+    print(len(i))
+
+quick_paths_edges =[]
+
+for i in quick_paths_nodes:
+    quick_paths_edges.append(list(zip(i,i[1:])))
+
+print('-----------------------------------------------')
+print('-----------------------------------------------')
+print('-----------------------------------------------')
+print(position)
+
+#fixed=[1,400]
+fixed_points = []
+pos = nx.spring_layout(G,k=20, pos=position, iterations=100)
+
+
+'''
+max_width = abs(pos[1][0])*2
+#print(starting_width)
+for i in range(1,1001):
+    pos = nx.spring_layout(G, pos=pos, iterations=1)
+    z = 1
+    while z<401:
+        if abs(pos[z][0])>max_width or abs(pos[z][1]) > max_width:
+            fixed_points.append(z)
+        z+=1
+    if len(fixed_points)>0:
+        break
+print(fixed_points)'''
+
+
+
+print(pos[60][0])
+
+print('-----------------------------------------------')
+print('-----------------------------------------------')
+print('-----------------------------------------------')
+
+nx.draw(G, pos, dim=20, node_color='forestgreen', node_size=nodeSize, with_labels=True,\
+    width= 0.5,alpha=1, font_size=8,font_weight='normal',\
+    arrows=True, arrowstyle= '-|>, head_length=0.6, head_width=0.1')
 #print(nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=10))
 #print(pos)
 #nx.draw_networkx_edges(G,pos,arrows=True,arrowstyle='-|>', arrowsize=10)
 
 
+#violet 139 you see the chest you work with the keys
+# crossroads 85, 267, 308 ,359, 329, 354
+#Three way 52, 238, 246, 51
 
-
-#path_edges = zip(path,path[1:])
+#path_edges = list(zip(path,path[1:]))
 
 # get solution to be a line. Make it so itsteadly becoming straight line
-# those 9 connected points from the begining to the end should be bolded
+# those 10 connected points from the begining to the end should be bolded
 # stop those few points from flying away
-# point out deaths and wrong keys
+
+#nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='royalblue', node_size=nodeSize)
+#nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='royalblue', node_size=nodeSize)
 
 
-nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='blue', node_size=80)
-nx.draw_networkx_nodes(G,pos,nodelist=good_keys,node_color='cyan', node_size=80)
-nx.draw_networkx_nodes(G,pos,nodelist=bad_keys,node_color='purple', node_size=80)
-nx.draw_networkx_nodes(G,pos,nodelist=bad_keys,node_color='orange', node_size=80)
-nx.draw_networkx_nodes(G,pos,nodelist=dead,node_color='red', node_size=80)
-print(path)
-#nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='r',width=10)
+a = 0
+colpa = ['skyblue', 'darkturquoise']
+while a < len(quick_paths_nodes):
+    nx.draw_networkx_nodes(G,pos,nodelist=quick_paths_nodes[a],node_color=colpa[a],\
+        node_size=nodeSize)
+    nx.draw_networkx_edges(G,pos,edgelist=quick_paths_edges[a],edge_color=colpa[a],\
+        width=1)
+    a+=1
+
+nx.draw_networkx_nodes(G,pos,nodelist=good_keys,node_color='mediumorchid', node_size=nodeSize)
+nx.draw_networkx_nodes(G,pos,nodelist=bad_keys,node_color='orange', node_size=nodeSize)
+nx.draw_networkx_nodes(G,pos,nodelist=dead,node_color='crimson', node_size=nodeSize)
+
+#nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='royalblue',width=2)
+#nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='royalblue',width=2)
 
 
 
@@ -122,9 +176,9 @@ print('---------------')
 print(special_ones)
 plt.savefig("graph.png")
 #nx.draw_networkx_nodes(G,pos=after_iterating,nodelist=[0,400], node_color='b')
-
 '''
- Animation based on answer from @david
+
+Animation based on answer from @david
 https://stackoverflow.com/questions/61261107/smooth-animation-of-a-network-using-networkx-and-matplotlib
 
 node_number = 0
@@ -157,9 +211,9 @@ def simple_update(num, n, layout, G, ax):
     ax.set_title("Frame {}".format(num))
 
     iteration += 1
+'''
 
-
-
+'''
 # Build plot
 fig, ax = plt.subplots(figsize=(10,10))
 
@@ -170,10 +224,11 @@ G = nx.gnm_random_graph(n, m)
 layout = nx.spring_layout(G)
 
 ani = animation.FuncAnimation(fig, simple_update, frames=10, fargs=(n, layout, G, ax))
-
+'''
 
 plt.show()
 
+'''
 
 
 
@@ -197,10 +252,8 @@ plt.show()
 
 
 
-
-
-
-
+'''
+'''
 edge_x = []
 edge_y = []
 for edge in G.edges():
