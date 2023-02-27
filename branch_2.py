@@ -1,19 +1,16 @@
-import matplotlib.pyplot as plt
-
-import matplotlib.animation as animation
-
-import plotly.graph_objects as go
-
-import networkx as nx
-
-import numpy as np
-
+'''
+Displaying gamebook as network graph
+'''
 import csv
-
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import matplotlib.animation as animation
+import plotly.graph_objects as go
+import networkx as nx
 
 
 #250
-nodeSize = 150
+NODE_SIZE = 150
 
 #If non directional
 #G = nx.Graph()
@@ -23,52 +20,44 @@ nodeSize = 150
 G = nx.DiGraph(directed=True)
 
 with open('Gamebook Nodes.csv') as nodesFile:
-	readCSVNodes= csv.reader(nodesFile, delimiter=',')
+    readCSVNodes= csv.reader(nodesFile, delimiter=',')
 
-	
-	for row in readCSVNodes:
-		# Creating With and without special names
-		if row[0] == row[1]:
-			
-			if int(row[0])%20 != 0:
-				G.add_node(int(row[0]), name='', pos=(int(row[0])%20,-(int(row[0])//20+1)))
-			else:
-				G.add_node(int(row[0]), name='', pos=(20,-(int(row[0])//20)))
+    for row in readCSVNodes:
+        # Creating With and without special names
+        if row[0] == row[1]:
+            if int(row[0])%20 != 0:
+                G.add_node(int(row[0]), name='', pos=(int(row[0])%20,-(int(row[0])//20+1)))
+            else:
+                G.add_node(int(row[0]), name='', pos=(20,-(int(row[0])//20)))
 
-		else:
-			
-			if int(row[0])%20 != 0:
-				G.add_node(int(row[0]), name=row[1], pos=(int(row[0])%20,-(int(row[0])//20+1)))
-			else:
-				G.add_node(int(row[0]), name=row[1], pos=(20,-(int(row[0])//20)))
-		
+        else:
+            if int(row[0])%20 != 0:
+                G.add_node(int(row[0]), name=row[1], pos=(int(row[0])%20,-(int(row[0])//20+1)))
+            else:
+                G.add_node(int(row[0]), name=row[1], pos=(20,-(int(row[0])//20)))
 
-with open('Gamebook Edges.csv') as edgesFile:
-	readCSVEdges= csv.reader(edgesFile, delimiter=',')
-
-	for row in readCSVEdges:
-
-		if row[1] != '':
-			G.add_edge(int(row[0]), int(row[1]))
-
+with open('Gamebook Edges.csv',encoding='utf*') as edgesFile:
+    readCSVEdges= csv.reader(edgesFile, delimiter=',')
+    for row in readCSVEdges:
+        if row[1] != '':
+            G.add_edge(int(row[0]), int(row[1]))
 
 #print(G.nodes.data())
 #Assign positions to nodes
 position = nx.get_node_attributes(G, 'pos')
-
 
 good_keys = [75,145,258]
 bad_keys = [50,125,322]
 failed = [139,182,198]
 dead = [64,118,387]
 
-
 #Succeasfull paths: get 3 good keys
 key_options=[good_keys,
+    [good_keys[0], good_keys[1],good_keys[2]],
     [good_keys[0], good_keys[2],good_keys[1]],
     [good_keys[1], good_keys[0],good_keys[2]],
-    [good_keys[1], good_keys[2],good_keys[0]],
     [good_keys[2], good_keys[0],good_keys[1]],
+    [good_keys[1], good_keys[2],good_keys[0]],
     [good_keys[2], good_keys[1],good_keys[0]]]
 
 #shortest path
@@ -98,9 +87,23 @@ print('-----------------------------------------------')
 print('-----------------------------------------------')
 print(position)
 
+
+# Add fence nodes
+fence_nodes = [(x, -1) for x in range(-10, 11)] + [(x, 11) for x in range(-10, 11)] +
+              [(-1, y) for y in range(-10, 11)] + [(11, y) for y in range(-10, 11)]
+G.add_nodes_from(fence_nodes)
+
 #fixed=[1,400]
 fixed_points = []
-pos = nx.spring_layout(G,k=20, pos=position, iterations=100)
+pos = nx.spring_layout(G,k=None, pos=position, iterations=4000)
+
+# create the fence
+vertices = [(-1,-1), (-1,1), (1,1), (1,-1)]
+fence = patches.Polygon(vertices, linewidth=1, edgecolor='r', facecolor='none')
+plt.gca().add_patch(fence)
+
+
+
 
 
 '''
@@ -117,21 +120,19 @@ for i in range(1,1001):
         break
 print(fixed_points)'''
 
-
-
 print(pos[60][0])
 
 print('-----------------------------------------------')
 print('-----------------------------------------------')
 print('-----------------------------------------------')
 
-nx.draw(G, pos, dim=20, node_color='forestgreen', node_size=nodeSize, with_labels=True,\
+nx.draw(G, pos, node_color='forestgreen', node_size=NODE_SIZE, with_labels=True,\
     width= 0.5,alpha=1, font_size=8,font_weight='normal',\
     arrows=True, arrowstyle= '-|>, head_length=0.6, head_width=0.1')
+#dim=20
 #print(nx.spring_layout(G, pos=position, fixed=[1, 400], iterations=10))
 #print(pos)
 #nx.draw_networkx_edges(G,pos,arrows=True,arrowstyle='-|>', arrowsize=10)
-
 
 #violet 139 you see the chest you work with the keys
 # crossroads 85, 267, 308 ,359, 329, 354
@@ -143,32 +144,26 @@ nx.draw(G, pos, dim=20, node_color='forestgreen', node_size=nodeSize, with_label
 # those 10 connected points from the begining to the end should be bolded
 # stop those few points from flying away
 
-#nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='royalblue', node_size=nodeSize)
-#nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='royalblue', node_size=nodeSize)
-
+#nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='royalblue', node_size=NODE_SIZE)
+#nx.draw_networkx_nodes(G,pos,nodelist=path,node_color='royalblue', node_size=NODE_SIZE)
 
 a = 0
 colpa = ['skyblue', 'darkturquoise']
 while a < len(quick_paths_nodes):
     nx.draw_networkx_nodes(G,pos,nodelist=quick_paths_nodes[a],node_color=colpa[a],\
-        node_size=nodeSize)
+        node_size=NODE_SIZE)
     nx.draw_networkx_edges(G,pos,edgelist=quick_paths_edges[a],edge_color=colpa[a],\
         width=1)
     a+=1
 
-nx.draw_networkx_nodes(G,pos,nodelist=good_keys,node_color='mediumorchid', node_size=nodeSize)
-nx.draw_networkx_nodes(G,pos,nodelist=bad_keys,node_color='orange', node_size=nodeSize)
-nx.draw_networkx_nodes(G,pos,nodelist=dead,node_color='crimson', node_size=nodeSize)
+nx.draw_networkx_nodes(G,pos,nodelist=good_keys,node_color='mediumorchid', node_size=NODE_SIZE)
+nx.draw_networkx_nodes(G,pos,nodelist=bad_keys,node_color='orange', node_size=NODE_SIZE)
+nx.draw_networkx_nodes(G,pos,nodelist=dead,node_color='crimson', node_size=NODE_SIZE)
 
 #nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='royalblue',width=2)
 #nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='royalblue',width=2)
-
-
 
 plt.axis('equal')
-
-
-
 
 special_ones = nx.get_node_attributes(G, 'after_iterating')
 plt.show()
@@ -229,27 +224,6 @@ ani = animation.FuncAnimation(fig, simple_update, frames=10, fargs=(n, layout, G
 plt.show()
 
 '''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 '''
