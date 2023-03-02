@@ -8,22 +8,15 @@ import matplotlib.animation as animation
 import plotly.graph_objects as go
 import networkx as nx
 
-
-#250
 NODE_SIZE = 150
 
-#If non directional
-#G = nx.Graph()
-
-
-#Directions https://stackoverflow.com/a/48995916/5531122
+# Main network graph
 G = nx.DiGraph(directed=True)
 
 with open('Gamebook Nodes.csv') as nodesFile:
     readCSVNodes= csv.reader(nodesFile, delimiter=',')
-
     for row in readCSVNodes:
-        # Creating With and without special names
+        # Creating with and without special names
         if row[0] == row[1]:
             if int(row[0])%20 != 0:
                 G.add_node(int(row[0]), name='', pos=(int(row[0])%20,-(int(row[0])//20+1)))
@@ -46,19 +39,19 @@ with open('Gamebook Edges.csv',encoding='utf*') as edgesFile:
 #Assign positions to nodes
 position = nx.get_node_attributes(G, 'pos')
 
-good_keys = [75,145,258]
-bad_keys = [50,125,322]
-failed = [139,182,198]
-dead = [64,118,387]
+GOOD_KEYS = [75,145,258]
+BAD_KEYS = [50,125,322]
+FAILED = [139,182,198]
+DEAD = [64,118,387]
 
 #Succeasfull paths: get 3 good keys
-key_options=[good_keys,
-    [good_keys[0], good_keys[1],good_keys[2]],
-    [good_keys[0], good_keys[2],good_keys[1]],
-    [good_keys[1], good_keys[0],good_keys[2]],
-    [good_keys[2], good_keys[0],good_keys[1]],
-    [good_keys[1], good_keys[2],good_keys[0]],
-    [good_keys[2], good_keys[1],good_keys[0]]]
+key_options=[GOOD_KEYS,
+    [GOOD_KEYS[0], GOOD_KEYS[1],GOOD_KEYS[2]],
+    [GOOD_KEYS[0], GOOD_KEYS[2],GOOD_KEYS[1]],
+    [GOOD_KEYS[1], GOOD_KEYS[0],GOOD_KEYS[2]],
+    [GOOD_KEYS[2], GOOD_KEYS[0],GOOD_KEYS[1]],
+    [GOOD_KEYS[1], GOOD_KEYS[2],GOOD_KEYS[0]],
+    [GOOD_KEYS[2], GOOD_KEYS[1],GOOD_KEYS[0]]]
 
 #shortest path
 quick_paths_nodes = []
@@ -73,38 +66,34 @@ for i in key_options:
         working_paths.append(i)
         print(i)
     except:
-        print(i,"An exception occurred")
+        print("No pathway in direction: ",i)
+'''
 for i in quick_paths_nodes:
     print(len(i))
-
+'''
 quick_paths_edges =[]
 
 for i in quick_paths_nodes:
     quick_paths_edges.append(list(zip(i,i[1:])))
 
 print('-----------------------------------------------')
-print('-----------------------------------------------')
-print('-----------------------------------------------')
-print(position)
-
 
 # Add fence nodes
-fence_nodes = [(x, -1) for x in range(-10, 11)] + [(x, 11) for x in range(-10, 11)] +
-              [(-1, y) for y in range(-10, 11)] + [(11, y) for y in range(-10, 11)]
+fence_nodes = [(x, -1) for x in range(-10, 11)] + [(x, 11) for x in range(-10, 11)] +\
+[(-1, y) for y in range(-10, 11)] + [(11, y) for y in range(-10, 11)]
+
 G.add_nodes_from(fence_nodes)
 
 #fixed=[1,400]
 fixed_points = []
-pos = nx.spring_layout(G,k=None, pos=position, iterations=4000)
+pos = nx.spring_layout(G,k=None, pos=position, iterations=0)
 
+'''
 # create the fence
 vertices = [(-1,-1), (-1,1), (1,1), (1,-1)]
 fence = patches.Polygon(vertices, linewidth=1, edgecolor='r', facecolor='none')
 plt.gca().add_patch(fence)
-
-
-
-
+'''
 
 '''
 max_width = abs(pos[1][0])*2
@@ -119,8 +108,6 @@ for i in range(1,1001):
     if len(fixed_points)>0:
         break
 print(fixed_points)'''
-
-print(pos[60][0])
 
 print('-----------------------------------------------')
 print('-----------------------------------------------')
@@ -156,9 +143,10 @@ while a < len(quick_paths_nodes):
         width=1)
     a+=1
 
-nx.draw_networkx_nodes(G,pos,nodelist=good_keys,node_color='mediumorchid', node_size=NODE_SIZE)
-nx.draw_networkx_nodes(G,pos,nodelist=bad_keys,node_color='orange', node_size=NODE_SIZE)
-nx.draw_networkx_nodes(G,pos,nodelist=dead,node_color='crimson', node_size=NODE_SIZE)
+nx.draw_networkx_nodes(G,pos,nodelist=GOOD_KEYS,node_color='mediumorchid', node_size=NODE_SIZE)
+nx.draw_networkx_nodes(G,pos,nodelist=BAD_KEYS,node_color='orange', node_size=NODE_SIZE)
+nx.draw_networkx_nodes(G,pos,nodelist=DEAD,node_color='crimson', node_size=NODE_SIZE)
+nx.draw_networkx_nodes(G,pos,nodelist=fence_nodes,node_color='blue', node_size=NODE_SIZE/4)
 
 #nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='royalblue',width=2)
 #nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='royalblue',width=2)
@@ -172,7 +160,6 @@ print(special_ones)
 plt.savefig("graph.png")
 #nx.draw_networkx_nodes(G,pos=after_iterating,nodelist=[0,400], node_color='b')
 '''
-
 Animation based on answer from @david
 https://stackoverflow.com/questions/61261107/smooth-animation-of-a-network-using-networkx-and-matplotlib
 
@@ -180,7 +167,6 @@ node_number = 0
 while node_number < 10:
     pos = nx.spring_layout(G, pos=position, fixed=[1,400], iterations=node_number)
     node_number += 1
-
 
 def anim(t):
     global s_pos
@@ -190,10 +176,8 @@ def anim(t):
     plt.cla()
     nx.draw(G, pos=interpolation)
 
-
 ani = animation.FuncAnimation(G, anim, repeat=False, frames=10, interval=10)
 plt.show()
-
 
 iteration = 0
 def simple_update(num, n, layout, G, ax):
@@ -223,10 +207,7 @@ ani = animation.FuncAnimation(fig, simple_update, frames=10, fargs=(n, layout, G
 
 plt.show()
 
-'''
 
-
-'''
 '''
 edge_x = []
 edge_y = []
