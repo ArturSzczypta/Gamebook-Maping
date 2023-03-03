@@ -29,6 +29,20 @@ with open('Gamebook Nodes.csv') as nodesFile:
             else:
                 G.add_node(int(row[0]), name=row[1], pos=(20,-(int(row[0])//20)))
 
+# Add fence nodes
+fence_nodes = []
+distance = 30
+for val in range(distance):
+    fence_nodes.append((-4 + val, 5-distance))
+    fence_nodes.append((-4 + val, 5))
+    fence_nodes.append((-4, 5-distance + val))
+    fence_nodes.append((distance-4, 5-distance + val))
+fence_nodes.sort()
+
+for pos in fence_nodes:
+    G.add_node(pos, name='', pos=pos)
+
+
 with open('Gamebook Edges.csv',encoding='utf*') as edgesFile:
     readCSVEdges= csv.reader(edgesFile, delimiter=',')
     for row in readCSVEdges:
@@ -78,15 +92,14 @@ for i in quick_paths_nodes:
 
 print('-----------------------------------------------')
 
-# Add fence nodes
-fence_nodes = [(x, -1) for x in range(-10, 11)] + [(x, 11) for x in range(-10, 11)] +\
-[(-1, y) for y in range(-10, 11)] + [(11, y) for y in range(-10, 11)]
-
-G.add_nodes_from(fence_nodes)
 
 #fixed=[1,400]
 fixed_points = []
-pos = nx.spring_layout(G,k=None, pos=position, iterations=0)
+pos = nx.spring_layout(G,k=None, pos=position, iterations=10,fixed=fence_nodes)
+
+# Print the node positions
+for node, position in pos.items():
+    print(f"Node {node}: position {position}")
 
 '''
 # create the fence
@@ -146,7 +159,7 @@ while a < len(quick_paths_nodes):
 nx.draw_networkx_nodes(G,pos,nodelist=GOOD_KEYS,node_color='mediumorchid', node_size=NODE_SIZE)
 nx.draw_networkx_nodes(G,pos,nodelist=BAD_KEYS,node_color='orange', node_size=NODE_SIZE)
 nx.draw_networkx_nodes(G,pos,nodelist=DEAD,node_color='crimson', node_size=NODE_SIZE)
-nx.draw_networkx_nodes(G,pos,nodelist=fence_nodes,node_color='blue', node_size=NODE_SIZE/4)
+nx.draw_networkx_nodes(G,pos,nodelist=fence_nodes,node_color='blue', node_size=NODE_SIZE)
 
 #nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='royalblue',width=2)
 #nx.draw_networkx_edges(G,pos,edgelist=path_edges,edge_color='royalblue',width=2)
